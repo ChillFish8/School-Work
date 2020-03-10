@@ -53,10 +53,15 @@ class Board:
             self.game_map[f'{y} '][x] = "#"
 
 
-class BattleShip(Board):
+class BattleShips(Board):
     def __init__(self):
         super().__init__()
         self.ships = {'5': [], '4': [], '3-1': [], '3-2': [], '2': []}
+
+    class Ship:
+        def __init__(self, hp, co_ords):
+            self.co_ords = co_ords
+            self.hp = hp
 
     def home_screen(self):
         for i in range(4):
@@ -79,5 +84,5 @@ class BattleShip(Board):
         keys = pygame.key.get_pressed()
 
 
-game = BattleShip()
+game = BattleShips()
 game.start()
