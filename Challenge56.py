@@ -19,8 +19,7 @@ def get_cards():
     amount_ = input("How many cards do you want?")
     if amount_.isdigit():
         random.shuffle(__Cards__)
-        for i in range(int(amount_)):
-            print(random.choice(__Cards__))  # could just do __card__[i] but want eXtRA sHuFfLeS
+        print(__Cards__[:int(amount_)])  # could just do __card__[i] but want eXtRA sHuFfLeS
     else:
         get_cards()
 

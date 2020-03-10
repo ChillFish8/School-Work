@@ -35,8 +35,7 @@ def decrypt():
             Temp_Letter += letter
         else:
             i += 1
-            if i == 2:
-                Decryption += ' '
+            if i == 2: Decryption += ' '
             else:
                 Decryption += list(__Morse_Code_Dict__.keys())[list(__Morse_Code_Dict__.values()).index(Temp_Letter)]
                 Temp_Letter = ''
