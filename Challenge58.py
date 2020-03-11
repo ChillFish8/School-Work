@@ -4,6 +4,10 @@ import os
 import sys
 import time
 import pygame
+import itertools
+import keyboard
+
+pygame.init()
 
 
 def make_map():
@@ -56,7 +60,7 @@ class Board:
 class BattleShips(Board):
     def __init__(self):
         super().__init__()
-        self.ships = {'5': [], '4': [], '3-1': [], '3-2': [], '2': []}
+        self.ships = []
 
     class Ship:
         def __init__(self, hp, co_ords):
@@ -69,19 +73,56 @@ class BattleShips(Board):
             time.sleep(0.8)
             self.clear_screen()
         self.clear_screen()
-        for i in range(10):
-            print('######################################\n'
-                  '##                                  ##\n'
-                  '##         Game Starting in         ##\n'
-                  f'##                {9 - i}                 ##\n'
-                  '######################################\n')
-            time.sleep(1)
-            self.clear_screen()
+        choice = "_"
+        while choice not in ['Y', 'N']:
+            choice = input("Start Game? Y/N")
+            choice = choice.upper()
+        return choice == "Y"
+
+    def place_ships(self):
+        class ShipCreator:
+            def __init__(self, size):
+                self.positions = [{'hit': False, 'pos': ['ABCDEFGHIJ'[x], 1]} for x in range(size)]    # Default start
+                self.destroyed = False
+
+            def is_hit(self, co_ords):
+                for index, pos_dict in enumerate(self.positions):
+                    if co_ords == pos_dict['pos']:
+                        self.positions[index]['hit'] = True
+                        return True
+                else:
+                    return False
+
+            def is_destroyed(self):
+                amount_destroyed = 0
+                for pos in self.positions:
+                    if pos['hit']:
+                        amount_destroyed += 1
+                return amount_destroyed == len(self.positions)
+
+        for ship_size in [5, 4, 3, 3, 2]:
+            self.ships.append(ShipCreator(ship_size))
+        self.render()
+        print("Use the arrow keys to move the ship")
+        running_main = True
+        while running_main:
+            if keyboard.is_pressed('w'):          # Up
+                print("wew")
+            elif keyboard.is_pressed('s'):         # Down
+                print("wew")
+            elif keyboard.is_pressed('a'):         # Left
+                print("wew")
+            elif keyboard.is_pressed('d'):        # Right
+                print("wew")
+            elif keyboard.is_pressed('x'):       # Enter Button
+                print("wew")
+            time.sleep(0.2)
 
     def start(self):
-        self.home_screen()
-
-        keys = pygame.key.get_pressed()
+        if not self.home_screen():
+            sys.exit()
+        else:
+            self.place_ships()
 
 
 game = BattleShips()
