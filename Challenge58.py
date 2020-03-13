@@ -3,17 +3,14 @@
 import os
 import sys
 import time
-import pygame
 import itertools
 import keyboard
-
-pygame.init()
 
 
 def make_map():
     map_ = {"-": [f" {i}" for i in "ABCDEFGHIJ"]}
     for i in range(1, 11):
-        map_[f"{i} "] = ["\u200b" for i in "ABCDEFGHIJ"]
+        map_[f"{i}"] = ["\u200b" for i in "ABCDEFGHIJ"]
     return map_
 
 
@@ -24,6 +21,7 @@ def get_keyboard_input():
 class Board:
     def __init__(self):
         self.game_map = make_map()
+        self.game_blank = make_map()
 
     def clear_screen(self):
         if os.name == 'nt':
@@ -50,11 +48,11 @@ class Board:
         x = co_ords[0] if co_ords[0].isdigit() else [x for x in "ABCDEFGHIJ"].index(co_ords[0].upper())
         y = co_ords[1]
         if hit:
-            self.game_map[f'{y} '][x] = "x"
+            self.game_map[f'{y}'][x] = " x"
         elif miss:
-            self.game_map[f'{y} '][x] = "o"
+            self.game_map[f'{y}'][x] = " o"
         elif ship:
-            self.game_map[f'{y} '][x] = "#"
+            self.game_map[f'{y}'][x] = " #"
 
 
 class BattleShips(Board):
@@ -100,23 +98,61 @@ class BattleShips(Board):
                         amount_destroyed += 1
                 return amount_destroyed == len(self.positions)
 
+            def move(self, x=0, y=0, rotate=False):
+                LETTERS = 'ABCDEFGHIJ'
+                new_co_ords = []
+                if x:
+                    for pos_dict in self.positions:
+                        pos_dict['pos'][0] = LETTERS[LETTERS.index(pos_dict['pos'][0]) + x]
+                        new_co_ords.append(pos_dict)
+                elif y:
+                    for pos_dict in self.positions:
+                        pos_dict['pos'][1] = pos_dict['pos'][1] - y
+                        new_co_ords.append(pos_dict)
+                elif rotate:
+                    for pos_dict in self.positions:
+                        pos_dict['pos'][0] = LETTERS[LETTERS.index(pos_dict['pos'][0]) + x]
+                        new_co_ords.append(pos_dict)
+                print(new_co_ords)
+                self.positions = new_co_ords
+
         for ship_size in [5, 4, 3, 3, 2]:
             self.ships.append(ShipCreator(ship_size))
-        self.render()
-        print("Use the arrow keys to move the ship")
+
+        cycler = itertools.cycle(self.ships)
+        ship = next(cycler)
+
         running_main = True
         while running_main:
-            if keyboard.is_pressed('w'):          # Up
-                print("wew")
-            elif keyboard.is_pressed('s'):         # Down
-                print("wew")
-            elif keyboard.is_pressed('a'):         # Left
-                print("wew")
-            elif keyboard.is_pressed('d'):        # Right
-                print("wew")
-            elif keyboard.is_pressed('x'):       # Enter Button
-                print("wew")
-            time.sleep(0.2)
+            self.clear_screen()
+            self.game_map = make_map()
+            for co_ord in ship.positions:
+                self.add_marker(co_ords=co_ord['pos'], ship=True)
+            self.render()
+            print("Use the arrow keys to move the ship")
+
+            running_sub = True
+            while running_sub:
+                if keyboard.is_pressed('w'):          # Up
+                    ship.move(y=1)
+                    running_sub = False
+
+                elif keyboard.is_pressed('s'):         # Down
+                    ship.move(y=-1)
+                    running_sub = False
+
+                elif keyboard.is_pressed('a'):         # Left
+                    ship.move(x=-1)
+                    running_sub = False
+
+                elif keyboard.is_pressed('d'):        # Right
+                    ship.move(x=1)
+                    running_sub = False
+
+                elif keyboard.is_pressed('x'):       # Enter Button
+                    print("wew")
+                    running_sub = False
+
 
     def start(self):
         if not self.home_screen():
