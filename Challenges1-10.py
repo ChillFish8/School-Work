@@ -1,4 +1,7 @@
+# Run using JIT Compiler 3.8
+
 import random
+
 
 def ch1():
     print('Hello World!')
